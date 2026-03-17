@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPINW Booster Simulator</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background: gold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.card {
+  border: 2px solid white;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+  display: inline-block;
+  width: 150px;
+}
+.common { background: gray; }
+.uncommon { background: green; }
+.rare { background: blue; }
+.epic { background: purple; }
+.legendary { background: orange; }
+.mythic { background: red; }
+</style>
+</head>
+<body>
+
+<h1>🎴 WPINW Booster Simulator</h1>
+<p>Kliknij, aby otworzyć booster!</p>
+<button onclick="openBooster()">/open booster</button>
+
+<div id="cards"></div>
+
+<script>
+const pool = [
+  {name:"Drewniak", rarity:"common"},
+  {name:"Hamak", rarity:"common"},
+  {name:"Płotek", rarity:"common"},
+  {name:"Jerba", rarity:"uncommon"},
+  {name:"Net", rarity:"uncommon"},
+  {name:"Astral", rarity:"rare"},
+  {name:"Bob", rarity:"rare"},
+  {name:"Snake", rarity:"epic"},
+  {name:"Televizorek", rarity:"epic"},
+  {name:"Shiba", rarity:"legendary"},
+  {name:"X", rarity:"legendary"},
+  {name:"Kapi", rarity:"mythic"}
+];
+
+function getRandomCard() {
+  let roll = Math.random();
+
+  if (roll < 0.65) return pool.filter(c=>c.rarity=="common")[Math.floor(Math.random()*3)];
+  if (roll < 0.85) return pool.filter(c=>c.rarity=="uncommon")[Math.floor(Math.random()*2)];
+  if (roll < 0.94) return pool.filter(c=>c.rarity=="rare")[Math.floor(Math.random()*2)];
+  if (roll < 0.98) return pool.filter(c=>c.rarity=="epic")[Math.floor(Math.random()*2)];
+  if (roll < 0.998) return pool.filter(c=>c.rarity=="legendary")[Math.floor(Math.random()*2)];
+  return pool.filter(c=>c.rarity=="mythic")[0];
+}
+
+function openBooster() {
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+
+  for (let i = 0; i < 10; i++) {
+    let card = getRandomCard();
+    let div = document.createElement("div");
+    div.className = "card " + card.rarity;
+    div.innerHTML = `<h3>${card.name}</h3><p>${card.rarity}</p>`;
+    container.appendChild(div);
+  }
+}
+</script>
+
+</body>
+</html>
