@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>WPINW ULTRA BOOSTER</title>
+<style>
+body {
+  font-family: Arial;
+  background: radial-gradient(circle, #0f0f1a, #1e1e2f);
+  color: white;
+  text-align: center;
+}
+button {
+  padding: 15px 30px;
+  font-size: 20px;
+  background: gold;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+.pack {
+  width: 200px;
+  height: 300px;
+  margin: 20px auto;
+  background: linear-gradient(45deg, purple, blue);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:20px;
+  cursor:pointer;
+  transition: transform 0.3s;
+}
+.pack:hover { transform: scale(1.05); }
+
+.card {
+  width:150px;
+  margin:10px;
+  padding:10px;
+  border-radius:10px;
+  display:inline-block;
+  transform: rotateY(90deg);
+  animation: flip 0.6s forwards;
+}
+@keyframes flip {
+  to { transform: rotateY(0deg); }
+}
+
+.common{background:gray;}
+.uncommon{background:green;}
+.rare{background:blue;}
+.epic{background:purple;}
+.legendary{background:orange;}
+.mythic{background:red;}
+
+#trophies{margin-top:20px;}
+</style>
+</head>
+<body>
+
+<h1>🎴 WPINW ULTRA BOOSTER</h1>
+
+<div class="pack" onclick="openPack()">OTWÓRZ</div>
+
+<div id="cards"></div>
+
+<h2>🏆 TOP 3 KARTY</h2>
+<div id="trophies"></div>
+
+<script>
+
+let trophies=[];
+
+const pool=[
+{name:"Drewniak",r:"common"},
+{name:"Hamak",r:"common"},
+{name:"Jerba",r:"uncommon"},
+{name:"Astral",r:"rare"},
+{name:"Snake",r:"epic"},
+{name:"Televizorek",r:"epic"},
+{name:"X",r:"legendary"},
+{name:"Kapi",r:"mythic"}
+];
+
+function rollCard(){
+ let roll=Math.random();
+
+ if(roll<0.7) return pool.filter(c=>c.r=="common")[0];
+ if(roll<0.9) return pool.filter(c=>c.r=="uncommon")[0];
+ if(roll<0.97) return pool.filter(c=>c.r=="rare")[0];
+ if(roll<0.995) return pool.filter(c=>c.r=="epic")[Math.floor(Math.random()*2)];
+ if(roll<0.999) return pool.filter(c=>c.r=="legendary")[0];
+ return pool.filter(c=>c.r=="mythic")[0];
+}
+
+function posr(r){
+ switch(r){
+  case "common":return 12000+Math.floor(Math.random()*2000);
+  case "uncommon":return 8000+Math.floor(Math.random()*2000);
+  case "rare":return 4000+Math.floor(Math.random()*1000);
+  case "epic":return 1500+Math.floor(Math.random()*500);
+  case "legendary":return 500+Math.floor(Math.random()*200);
+  case "mythic":return Math.floor(Math.random()*100);
+ }
+}
+
+function openPack(){
+ let cont=document.getElementById("cards");
+ cont.innerHTML="";
+
+ let guaranteedEpic=false;
+
+ for(let i=0;i<10;i++){
+   let c=rollCard();
+
+   // guarantee at least epic
+   if(i==9 && !guaranteedEpic){
+     c={name:"Snake",r:"epic"};
+   }
+
+   if(c.r=="epic"||c.r=="legendary"||c.r=="mythic"){
+     guaranteedEpic=true;
+   }
+
+   let p=posr(c.r);
+
+   trophies.push({name:c.name,r:c.r,p:p});
+   trophies.sort((a,b)=>a.p-b.p);
+   trophies=trophies.slice(0,3);
+
+   let div=document.createElement("div");
+   div.className="card "+c.r;
+   div.style.animationDelay=(i*0.2)+"s";
+   div.innerHTML="<b>"+c.name+"</b><br>"+c.r+"<br>PoSR:"+p;
+
+   cont.appendChild(div);
+ }
+
+ let t=document.getElementById("trophies");
+ t.innerHTML="";
+ trophies.forEach(x=>{
+   let d=document.createElement("div");
+   d.innerText=x.name+" ("+x.r+") PoSR:"+x.p;
+   t.appendChild(d);
+ });
+}
+
+</script>
+
+</body>
+</html>
