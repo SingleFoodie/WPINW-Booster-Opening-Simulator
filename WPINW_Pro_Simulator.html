@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPINW Booster Simulator PRO</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background: gold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.card {
+  border: 2px solid white;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+  display: inline-block;
+  width: 150px;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: reveal 0.5s forwards;
+}
+@keyframes reveal {
+  to { opacity: 1; transform: scale(1); }
+}
+.common { background: gray; }
+.uncommon { background: green; }
+.rare { background: blue; }
+.epic { background: purple; }
+.legendary { background: orange; }
+.mythic { background: red; }
+
+#stats, #trophies {
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<h1>🎴 WPINW Booster Simulator PRO</h1>
+<button onclick="openBooster()">/open booster</button>
+
+<div id="cards"></div>
+
+<div id="stats">
+  <h2>📊 Statystyki</h2>
+  <p id="money">Wydane: 0 zł</p>
+  <p id="value">Wartość kolekcji: $0</p>
+</div>
+
+<div id="trophies">
+  <h2>🏆 Półka Trofeów</h2>
+  <div id="trophyList"></div>
+</div>
+
+<script>
+let spent = 0;
+let value = 0;
+let trophies = [];
+
+const pool = [
+  {name:"Drewniak", rarity:"common"},
+  {name:"Hamak", rarity:"common"},
+  {name:"Płotek", rarity:"common"},
+  {name:"Jerba", rarity:"uncommon"},
+  {name:"Net", rarity:"uncommon"},
+  {name:"Astral", rarity:"rare"},
+  {name:"Bob", rarity:"rare"},
+  {name:"Snake", rarity:"epic"},
+  {name:"Televizorek", rarity:"epic"},
+  {name:"Shiba", rarity:"legendary"},
+  {name:"X", rarity:"legendary"},
+  {name:"Kapi", rarity:"mythic"}
+];
+
+function getPoSR(rarity) {
+  switch(rarity) {
+    case "common": return Math.floor(Math.random()*5000)+10000;
+    case "uncommon": return Math.floor(Math.random()*3000)+7000;
+    case "rare": return Math.floor(Math.random()*2000)+3000;
+    case "epic": return Math.floor(Math.random()*1500)+1000;
+    case "legendary": return Math.floor(Math.random()*500)+500;
+    case "mythic": return Math.floor(Math.random()*100);
+  }
+}
+
+function getValue(rarity) {
+  switch(rarity) {
+    case "common": return 0.1;
+    case "uncommon": return 0.2;
+    case "rare": return 0.8;
+    case "epic": return 2.5;
+    case "legendary": return 8;
+    case "mythic": return 25;
+  }
+}
+
+function getRandomCard() {
+  let roll = Math.random();
+
+  if (roll < 0.65) return pool.filter(c=>c.rarity=="common")[Math.floor(Math.random()*3)];
+  if (roll < 0.85) return pool.filter(c=>c.rarity=="uncommon")[Math.floor(Math.random()*2)];
+  if (roll < 0.94) return pool.filter(c=>c.rarity=="rare")[Math.floor(Math.random()*2)];
+  if (roll < 0.98) return pool.filter(c=>c.rarity=="epic")[Math.floor(Math.random()*2)];
+  if (roll < 0.998) return pool.filter(c=>c.rarity=="legendary")[Math.floor(Math.random()*2)];
+  return pool.filter(c=>c.rarity=="mythic")[0];
+}
+
+function updateTrophies(card, posr) {
+  trophies.push({name: card.name, rarity: card.rarity, posr: posr});
+  trophies.sort((a,b)=>a.posr-b.posr);
+  trophies = trophies.slice(0,6);
+
+  const list = document.getElementById("trophyList");
+  list.innerHTML = "";
+  trophies.forEach(t => {
+    let div = document.createElement("div");
+    div.innerText = `${t.name} (${t.rarity}) PoSR:${t.posr}`;
+    list.appendChild(div);
+  });
+}
+
+function openBooster() {
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+
+  spent += 15;
+
+  for (let i = 0; i < 10; i++) {
+    let card = getRandomCard();
+    let posr = getPoSR(card.rarity);
+    let val = getValue(card.rarity);
+    value += val;
+
+    updateTrophies(card, posr);
+
+    let div = document.createElement("div");
+    div.className = "card " + card.rarity;
+    div.style.animationDelay = (i*0.1)+"s";
+    div.innerHTML = `<h3>${card.name}</h3><p>${card.rarity}</p><p>PoSR: ${posr}</p><p>$${val}</p>`;
+    container.appendChild(div);
+  }
+
+  document.getElementById("money").innerText = "Wydane: " + spent + " zł";
+  document.getElementById("value").innerText = "Wartość kolekcji: $" + value.toFixed(2);
+}
+</script>
+
+</body>
+</html>
